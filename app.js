@@ -2,41 +2,65 @@
 let universities = [];
 let authors = [];
 
+// Available years (you said 2016–2024)
+const MIN_YEAR = 2010;
+const MAX_YEAR = 2024;
+
+// Populate dropdowns
+function populateYearDropdowns() {
+    const startSel = document.getElementById("startYear");
+    const endSel = document.getElementById("endYear");
+
+    for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
+        let opt1 = document.createElement("option");
+        opt1.value = y;
+        opt1.textContent = y;
+        startSel.appendChild(opt1);
+
+        let opt2 = document.createElement("option");
+        opt2.value = y;
+        opt2.textContent = y;
+        endSel.appendChild(opt2);
+    }
+
+    // Default range = 2016–2024
+    startSel.value = 2016;
+    endSel.value = 2024;
+}
+
 // Load data on startup
 async function loadData() {
     universities = await fetch("./data/universitiesSub.json").then(r => r.json());
     authors = await fetch("./data/authorsSub.json").then(r => r.json());
-    updateRankings(); // initial page load
+
+    populateYearDropdowns();
+    updateRankings();
 }
 
-// Filter + aggregate for universities
+// Compute university ranking
 function computeUniversityRankings(startYear, endYear) {
-    // Step 1: filter by year
-    const filtered = universities.filter(r => r.year >= startYear && r.year <= endYear);
+    const filtered = universities.filter(r =>
+        r.year >= startYear && r.year <= endYear
+    );
 
-    // Step 2: aggregate counts
     const counts = {};
     filtered.forEach(row => {
         if (!counts[row.university]) counts[row.university] = 0;
         counts[row.university] += 1;
     });
 
-    // Step 3: convert to array
     const ranking = Object.keys(counts).map(uni => ({
         university: uni,
         articles: counts[uni]
     }));
 
-    // Step 4: sort descending
     ranking.sort((a, b) => b.articles - a.articles);
-
-    // Step 5: add rank numbers
     ranking.forEach((r, i) => r.rank = i + 1);
 
     return ranking;
 }
 
-// RENDER TABLE
+// Render HTML table
 function renderTable(rows) {
     const tbody = document.getElementById("tableBody");
     tbody.innerHTML = "";
@@ -52,17 +76,19 @@ function renderTable(rows) {
     });
 }
 
-// MAIN UPDATE FUNCTION
+// Update all
 function updateRankings() {
-    const yearRange = document.getElementById("yearRange").value; // e.g. "2020-2024"
-    const [startYear, endYear] = yearRange.split("-").map(Number);
+    const startYear = Number(document.getElementById("startYear").value);
+    const endYear = Number(document.getElementById("endYear").value);
+
+    if (startYear > endYear) return;
 
     const rankings = computeUniversityRankings(startYear, endYear);
     renderTable(rankings);
 }
 
-// Event listener
-document.getElementById("yearRange").addEventListener("change", updateRankings);
+// Event listeners
+document.addEventListener("change", updateRankings);
 
 // Start!
 loadData();
