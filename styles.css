@@ -105,6 +105,10 @@ nav a.active {
     margin-bottom: 4px;
 }
 
+#journalCheckboxes label {
+    color: black;
+}
+
 /* -------------------------
    MAIN CONTENT AREA
 -------------------------- */
@@ -150,4 +154,5 @@ tr:nth-child(even) td {
   width: 28px;
   height: auto;
 }
+
 
