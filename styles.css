@@ -91,6 +91,20 @@ nav a.active {
   border: none;
 }
 
+.checkbox-list {
+    display: flex;
+    flex-direction: column;
+    max-height: 250px;
+    overflow-y: auto;
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background: #fafafa;
+}
+.checkbox-list label {
+    margin-bottom: 4px;
+}
+
 /* -------------------------
    MAIN CONTENT AREA
 -------------------------- */
@@ -136,3 +150,4 @@ tr:nth-child(even) td {
   width: 28px;
   height: auto;
 }
+
