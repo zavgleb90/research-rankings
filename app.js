@@ -118,12 +118,12 @@ function renderTable(rows) {
 
 // Listeners
 document.addEventListener("change", updateRankings);
-document.getElementById("universitySearch");
-const uniSearch = document.getElementById("universitySearch").addEventListener("input", updateRankings);
+getElementById("universitySearch").addEventListener("input", updateRankings);
 
 
 // Start!
 loadData();
+
 
 
 
