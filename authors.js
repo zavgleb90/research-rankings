@@ -39,25 +39,27 @@ function populateYearDropdowns() {
     endSel.value = MAX_YEAR;
 }
 
-function computeAuthorRankings(startY, endY, searchTerm = "") {
-    let filtered = authorsData.filter(a => a.year >= startY && a.year <= endY);
+function computeAuthorRankings(startYear, endYear) {
+    // Step 1: filter by year
+    let filtered = authorsData.filter(a =>
+        a.year >= startYear &&
+        a.year <= endYear
+    );
 
-    if (searchTerm.length > 0) {
-        const lower = searchTerm.toLowerCase();
-        filtered = filtered.filter(a => a.author.toLowerCase().includes(lower));
-    }
-
+    // Step 2: count articles per author
     const counts = {};
     filtered.forEach(a => {
         if (!counts[a.author]) counts[a.author] = 0;
         counts[a.author] += 1;
     });
 
+    // Step 3: build ranking array
     const ranking = Object.keys(counts).map(author => ({
         author: author,
         articles: counts[author]
     }));
 
+    // Step 4: sort and assign ranks ONCE
     ranking.sort((a, b) => b.articles - a.articles);
     ranking.forEach((r, i) => r.rank = i + 1);
 
@@ -67,11 +69,20 @@ function computeAuthorRankings(startY, endY, searchTerm = "") {
 function updateAuthorsRankings() {
     const startY = Number(document.getElementById("startYear").value);
     const endY = Number(document.getElementById("endYear").value);
-    const search = document.getElementById("authorSearch").value.trim();
+    const search = document.getElementById("authorSearch").value.trim().toLowerCase();
 
-    const ranking = computeAuthorRankings(startY, endY, search);
-    renderAuthorsTable(ranking);
+    // Step 1: compute full ranking
+    let fullRanking = computeAuthorRankings(startY, endY);
+
+    // Step 2: apply search filter WITHOUT re-ranking
+    let filteredRanking = fullRanking.filter(r =>
+        r.author.toLowerCase().includes(search)
+    );
+
+    // Step 3: render the filtered list with original ranks
+    renderAuthorsTable(filteredRanking);
 }
+
 
 function renderAuthorsTable(rows) {
     const tbody = document.getElementById("authorsTableBody");
