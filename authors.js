@@ -124,7 +124,7 @@ function updateAuthorsRankings() {
 
     // Extract selected journals
     const journalSel = document.getElementById("journalFilter");
-    const selectedJournals = Array.from(journalSel.selectedOptions).map(o => o.value);
+    const selectedJournals = Array.from(document.querySelectorAll("#journalCheckboxes input:checked")).map(cb => cb.value);
 
     // Step 1: compute full correct ranking
     let fullRanking = computeFullAuthorRanking(startYear, endYear, selectedJournals);
