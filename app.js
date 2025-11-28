@@ -117,19 +117,17 @@ function renderTable(rows) {
         tbody.appendChild(tr);
     });
 }
-const uniSearch = document.getElementById("universitySearch");
 
 // Listeners
 document.addEventListener("change", updateRankings);
 
-// Search listener
-document.addEventListener("DOMContentLoaded", () => {
-    const uniSearch = document.getElementById("universitySearch");
-    if (uniSearch) {
-        uniSearch.addEventListener("input", updateRankings);
-    }
-});
+const uniSearch = document.getElementById("universitySearch");
+if (uniSearch) {
+    uniSearch.addEventListener("input", updateRankings);
+}
+
 
 // Start!
 loadData();
+
 
