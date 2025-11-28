@@ -51,16 +51,30 @@ function populateYearDropdowns() {
    JOURNAL FILTER (MULTI SELECT)
 ======================================================= */
 function populateJournalFilter() {
-    const journalSel = document.getElementById("journalFilter");
+    const container = document.getElementById("journalCheckboxes");
+    container.innerHTML = "";
 
-    // collect all unique journals
-    const allJournals = [...new Set(authorsData.map(a => a.journal))].sort();
+    const allJournals = [...new Set(
+        authorsData.map(a => a.journal)
+    )]
+        .filter(j => j && j.trim() !== "")
+        .sort();
 
-    allJournals.forEach(j => {
-        const opt = document.createElement("option");
-        opt.value = j;
-        opt.textContent = j;
-        journalSel.appendChild(opt);
+    allJournals.forEach(journal => {
+        const id = "journal_" + journal.replace(/\W+/g, "_");
+
+        const div = document.createElement("div");
+        div.innerHTML = `
+            <label>
+              <input type="checkbox" value="${journal}" id="${id}">
+              ${journal}
+            </label>
+        `;
+        container.appendChild(div);
+
+        // event listener
+        div.querySelector("input")
+            .addEventListener("change", updateAuthorsRankings);
     });
 }
 
