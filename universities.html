@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Research Rankings</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header>
+  <div class="logo">📚 Research Rankings</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="universities.html" class="active">Universities</a>
+    <a href="authors.html">Authors</a>
+    <a href="journals.html">Journals</a>
+    <a href="methodology.html">Methodology</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <aside class="filter-panel">
+    <h3>Filter</h3>
+
+    <div class="filter-group">
+      <label for="startYear">Start Year</label>
+      <select id="startYear"></select>
+    </div>
+
+    <div class="filter-group">
+      <label for="endYear">End Year</label>
+      <select id="endYear"></select>
+    </div>
+  </aside>
+
+  <section class="main-content">
+    <h1>University Research Rankings</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>University</th>
+          <th>Articles</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
