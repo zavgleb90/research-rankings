@@ -117,6 +117,7 @@ function renderTable(rows) {
         tbody.appendChild(tr);
     });
 }
+const uniSearch = document.getElementById("universitySearch");
 
 // Listeners
 document.addEventListener("change", updateRankings);
@@ -131,3 +132,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
 // Start!
 loadData();
+
