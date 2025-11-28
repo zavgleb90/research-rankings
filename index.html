@@ -11,7 +11,7 @@
 <header>
   <div class="logo">📚 Research Rankings</div>
   <nav>
-    <a href="index.html" class="active">Rankings</a>
+    <a href="index.html" class="active">Home</a>
     <a href="universities.html">Universities</a>
     <a href="authors.html">Authors</a>
     <a href="journals.html">Journals</a>
@@ -21,42 +21,36 @@
 
 <div class="container">
 
-  <!-- FILTER PANEL -->
-  <aside class="filter-panel">
-    <h3>Filter</h3>
+  <section class="main-content" style="flex:1; margin:auto;">
+    <h1>Welcome to the Global Research Rankings Project</h1>
 
-    <div class="filter-group">
-      <label for="startYear">Start Year</label>
-      <select id="startYear"></select>
-    </div>
+    <p style="font-size: 18px; line-height: 1.6;">
+      This platform provides transparent, data-driven rankings of universities
+      and authors based on publications across leading business and information systems journals.
+      Our goal is to deliver a modern, user-friendly, and academically rigorous 
+      tool for exploring global research productivity.
+    </p>
 
-    <div class="filter-group">
-      <label for="endYear">End Year</label>
-      <select id="endYear"></select>
-    </div>
+    <p style="font-size: 18px; line-height: 1.6;">
+      Use the navigation menu above to explore:
+    </p>
 
-  </aside>
+    <ul style="font-size: 18px; line-height: 1.6;">
+      <li><strong>Universities</strong> — Explore institutional research output across the full dataset.</li>
+      <li><strong>Authors</strong> — Compare research productivity of individual scholars.</li>
+      <li><strong>Journals</strong> — Analyze research output by journal.</li>
+      <li><strong>Methodology</strong> — Learn how the rankings are computed.</li>
+    </ul>
 
-  <!-- MAIN CONTENT -->
-  <section class="main-content">
-    <h1>World University Research Rankings</h1>
+    <p style="font-size: 18px; line-height: 1.6;">
+      This project is continuously evolving. Future features include university profiles,
+      author profiles, fractional counting methods, collaboration networks,
+      and interactive dashboards.
+    </p>
 
-    <table>
-      <thead>
-        <tr>
-          <th>Rank</th>
-          <th>University</th>
-          <th>Articles</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody">
-        <!-- JS will insert rows here -->
-      </tbody>
-    </table>
   </section>
 
 </div>
 
-<script src="app.js"></script>
 </body>
 </html>
