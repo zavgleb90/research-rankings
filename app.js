@@ -1,6 +1,5 @@
 // GLOBAL DATA
 let universities = [];
-let authors = [];  // you can remove this if unused
 
 let MIN_YEAR = 9999;
 let MAX_YEAR = 0;
@@ -23,6 +22,8 @@ async function loadData() {
 function populateYearDropdowns() {
     const startSel = document.getElementById("startYear");
     const endSel = document.getElementById("endYear");
+
+    if (!startSel || !endSel) return;
 
     startSel.innerHTML = "";
     endSel.innerHTML = "";
@@ -77,8 +78,12 @@ function computeFullUniversityRanking(startYear, endYear) {
    Update Rankings (preserve ranks)
 ----------------------------------------- */
 function updateRankings() {
-    const startYear = Number(document.getElementById("startYear").value);
-    const endYear = Number(document.getElementById("endYear").value);
+    const startSel = document.getElementById("startYear");
+    const endSel = document.getElementById("endYear");
+    if (!startSel || !endSel) return;
+
+    const startYear = Number(startSel.value);
+    const endYear = Number(endSel.value);
 
     const searchInput = document.getElementById("universitySearch");
     const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : "";
@@ -98,6 +103,8 @@ function updateRankings() {
 // RENDER TABLE
 function renderTable(rows) {
     const tbody = document.getElementById("tableBody");
+    if (!tbody) return;
+
     tbody.innerHTML = "";
 
     rows.forEach(r => {
@@ -114,11 +121,13 @@ function renderTable(rows) {
 // Listeners
 document.addEventListener("change", updateRankings);
 
-// FIX: define uniSearch before using it
-const uniSearch = document.getElementById("universitySearch");
-if (uniSearch) {
-    uniSearch.addEventListener("input", updateRankings);
-}
+// Search listener
+document.addEventListener("DOMContentLoaded", () => {
+    const uniSearch = document.getElementById("universitySearch");
+    if (uniSearch) {
+        uniSearch.addEventListener("input", updateRankings);
+    }
+});
 
 // Start!
 loadData();
