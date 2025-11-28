@@ -1,26 +1,29 @@
 // GLOBAL DATA
 let authorsData = [];
 
-// Year bounds — will be detected from data
 let MIN_YEAR = 9999;
 let MAX_YEAR = 0;
 
+/* =======================================================
+   LOAD DATA
+======================================================= */
 async function loadAuthors() {
     authorsData = await fetch("./data/authorsSub.json").then(r => r.json());
 
-    // Detect min/max years automatically
+    // Detect year bounds
     authorsData.forEach(a => {
         if (a.year < MIN_YEAR) MIN_YEAR = a.year;
         if (a.year > MAX_YEAR) MAX_YEAR = a.year;
     });
 
     populateYearDropdowns();
+    populateJournalFilter();
     updateAuthorsRankings();
 }
 
-/* -------------------------------
-   Populate Start/End Year Menus
---------------------------------*/
+/* =======================================================
+   YEAR FILTER
+======================================================= */
 function populateYearDropdowns() {
     const startSel = document.getElementById("startYear");
     const endSel = document.getElementById("endYear");
@@ -40,65 +43,89 @@ function populateYearDropdowns() {
         endSel.appendChild(e);
     }
 
-    // Default = full range
     startSel.value = MIN_YEAR;
     endSel.value = MAX_YEAR;
 }
 
-/* -------------------------------
-   Compute FULL Author Rankings
---------------------------------*/
-function computeFullAuthorRanking(startYear, endYear) {
-    // Filter by year
-    let yearFiltered = authorsData.filter(a =>
-        a.year >= startYear && a.year <= endYear
+/* =======================================================
+   JOURNAL FILTER (MULTI SELECT)
+======================================================= */
+function populateJournalFilter() {
+    const journalSel = document.getElementById("journalFilter");
+
+    // collect all unique journals
+    const allJournals = [...new Set(authorsData.map(a => a.journal))].sort();
+
+    allJournals.forEach(j => {
+        const opt = document.createElement("option");
+        opt.value = j;
+        opt.textContent = j;
+        journalSel.appendChild(opt);
+    });
+}
+
+/* =======================================================
+   COMPUTE FULL AUTHOR RANKING (preserves rank order)
+======================================================= */
+function computeFullAuthorRanking(startYear, endYear, selectedJournals) {
+    let filtered = authorsData.filter(a =>
+        a.year >= startYear &&
+        a.year <= endYear
     );
+
+    // Filter by journals ONLY IF user selected journals
+    if (selectedJournals.length > 0) {
+        filtered = filtered.filter(a =>
+            selectedJournals.includes(a.journal)
+        );
+    }
 
     // Count articles per author
     const counts = {};
-    yearFiltered.forEach(a => {
+    filtered.forEach(a => {
         if (!counts[a.author]) counts[a.author] = 0;
         counts[a.author] += 1;
     });
 
-    // Convert to ranking list
+    // Convert to ranking array
     let ranking = Object.keys(counts).map(author => ({
         author: author,
         articles: counts[author]
     }));
 
-    // Sort DESC
+    // Sort descending + assign true ranks
     ranking.sort((a, b) => b.articles - a.articles);
-
-    // Assign TRUE ranks
     ranking.forEach((r, i) => r.rank = i + 1);
 
     return ranking;
 }
 
-/* -------------------------------
-   Main Update Function
---------------------------------*/
+/* =======================================================
+   UPDATE RANKINGS
+======================================================= */
 function updateAuthorsRankings() {
-    const startY = Number(document.getElementById("startYear").value);
-    const endY = Number(document.getElementById("endYear").value);
+    const startYear = Number(document.getElementById("startYear").value);
+    const endYear = Number(document.getElementById("endYear").value);
     const searchTerm = document.getElementById("authorSearch").value.trim().toLowerCase();
 
-    // Step 1: compute full ranking with correct ranks
-    let fullRanking = computeFullAuthorRanking(startY, endY);
+    // Extract selected journals
+    const journalSel = document.getElementById("journalFilter");
+    const selectedJournals = Array.from(journalSel.selectedOptions).map(o => o.value);
 
-    // Step 2: Apply search WITHOUT re-ranking
-    let filtered = fullRanking.filter(r =>
+    // Step 1: compute full correct ranking
+    let fullRanking = computeFullAuthorRanking(startYear, endYear, selectedJournals);
+
+    // Step 2: apply search without re-ranking
+    let filteredRanking = fullRanking.filter(r =>
         r.author.toLowerCase().includes(searchTerm)
     );
 
-    // Step 3: Display filtered list with original ranks
-    renderAuthorsTable(filtered);
+    renderAuthorsTable(filteredRanking);
 }
 
-/* -------------------------------
-   Render Table
---------------------------------*/
+/* =======================================================
+   RENDER TABLE
+======================================================= */
 function renderAuthorsTable(rows) {
     const tbody = document.getElementById("authorsTableBody");
     tbody.innerHTML = "";
@@ -114,13 +141,15 @@ function renderAuthorsTable(rows) {
     });
 }
 
-/* -------------------------------
-   Event Listeners
---------------------------------*/
+/* =======================================================
+   EVENT LISTENERS
+======================================================= */
 document.addEventListener("change", updateAuthorsRankings);
 document.getElementById("authorSearch").addEventListener("input", updateAuthorsRankings);
 
-/* -------------------------------
-   Start
---------------------------------*/
+document.getElementById("journalFilter").addEventListener("change", updateAuthorsRankings);
+
+/* =======================================================
+   START
+======================================================= */
 loadAuthors();
