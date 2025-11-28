@@ -17,7 +17,7 @@ async function loadAuthors() {
     });
 
     populateYearDropdowns();
-    populateJournalFilter();
+    populateJournalCheckboxes();
     updateAuthorsRankings();
 }
 
@@ -48,13 +48,17 @@ function populateYearDropdowns() {
 }
 
 /* =======================================================
-   JOURNAL FILTER (MULTI SELECT)
+   JOURNAL FILTER (CHECKBOXES)
 ======================================================= */
-function populateJournalFilter() {
+function populateJournalCheckboxes() {
     const container = document.getElementById("journalCheckboxes");
     container.innerHTML = "";
 
-    const allJournals = [...new Set(authorsData.map(a => a.journal))].filter(j => j && j.trim() !== "").sort();
+    const allJournals = [...new Set(
+        authorsData
+            .map(a => a.journal)
+            .filter(j => j && j.trim() !== "")
+    )].sort();
 
     allJournals.forEach(journal => {
         const id = "journal_" + journal.replace(/\W+/g, "_");
@@ -62,20 +66,19 @@ function populateJournalFilter() {
         const div = document.createElement("div");
         div.innerHTML = `
             <label>
-              <input type="checkbox" value="${journal}" id="${id}">
-              ${journal}
+                <input type="checkbox" value="${journal}" id="${id}">
+                ${journal}
             </label>
         `;
         container.appendChild(div);
 
-        // event listener
-        div.querySelector("input")
-            .addEventListener("change", updateAuthorsRankings);
+        // Event listener for each checkbox
+        div.querySelector("input").addEventListener("change", updateAuthorsRankings);
     });
 }
 
 /* =======================================================
-   COMPUTE FULL AUTHOR RANKING (preserves rank order)
+   COMPUTE FULL AUTHOR RANKING (Preserve actual ranks)
 ======================================================= */
 function computeFullAuthorRanking(startYear, endYear, selectedJournals) {
     let filtered = authorsData.filter(a =>
@@ -83,27 +86,26 @@ function computeFullAuthorRanking(startYear, endYear, selectedJournals) {
         a.year <= endYear
     );
 
-    // Filter by journals ONLY IF user selected journals
+    // Apply journal filtering ONLY if journals selected
     if (selectedJournals.length > 0) {
         filtered = filtered.filter(a =>
             selectedJournals.includes(a.journal)
         );
     }
 
-    // Count articles per author
+    // Count papers per author
     const counts = {};
     filtered.forEach(a => {
         if (!counts[a.author]) counts[a.author] = 0;
         counts[a.author] += 1;
     });
 
-    // Convert to ranking array
     let ranking = Object.keys(counts).map(author => ({
         author: author,
         articles: counts[author]
     }));
 
-    // Sort descending + assign true ranks
+    // Sort descending and assign true rank
     ranking.sort((a, b) => b.articles - a.articles);
     ranking.forEach((r, i) => r.rank = i + 1);
 
@@ -111,21 +113,22 @@ function computeFullAuthorRanking(startYear, endYear, selectedJournals) {
 }
 
 /* =======================================================
-   UPDATE RANKINGS
+   UPDATE TABLE
 ======================================================= */
 function updateAuthorsRankings() {
     const startYear = Number(document.getElementById("startYear").value);
     const endYear = Number(document.getElementById("endYear").value);
     const searchTerm = document.getElementById("authorSearch").value.trim().toLowerCase();
 
-    // Extract selected journals
-    const journalSel = document.getElementById("journalFilter");
-    const selectedJournals = Array.from(document.querySelectorAll("#journalCheckboxes input:checked")).map(cb => cb.value);
+    // Gather selected journals
+    const selectedJournals = Array.from(
+        document.querySelectorAll("#journalCheckboxes input:checked")
+    ).map(cb => cb.value);
 
-    // Step 1: compute full correct ranking
+    // Compute rankings
     let fullRanking = computeFullAuthorRanking(startYear, endYear, selectedJournals);
 
-    // Step 2: apply search without re-ranking
+    // Apply search filter (preserve rank)
     let filteredRanking = fullRanking.filter(r =>
         r.author.toLowerCase().includes(searchTerm)
     );
@@ -156,8 +159,6 @@ function renderAuthorsTable(rows) {
 ======================================================= */
 document.addEventListener("change", updateAuthorsRankings);
 document.getElementById("authorSearch").addEventListener("input", updateAuthorsRankings);
-
-document.getElementById("journalFilter").addEventListener("change", updateAuthorsRankings);
 
 /* =======================================================
    START
