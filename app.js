@@ -4,8 +4,8 @@ let authors = [];
 
 // Load data on startup
 async function loadData() {
-    universities = await fetch("data/universitiesSub.json").then(r => r.json());
-    authors = await fetch("data/authorsSub.json").then(r => r.json());
+    universities = await fetch("./data/universitiesSub.json").then(r => r.json());
+    authors = await fetch("./data/authorsSub.json").then(r => r.json());
     updateRankings(); // initial page load
 }
 
@@ -22,7 +22,7 @@ function computeUniversityRankings(startYear, endYear) {
     });
 
     // Step 3: convert to array
-    const ranking = Object.keys(counts).map((uni, i) => ({
+    const ranking = Object.keys(counts).map(uni => ({
         university: uni,
         articles: counts[uni]
     }));
@@ -66,4 +66,3 @@ document.getElementById("yearRange").addEventListener("change", updateRankings);
 
 // Start!
 loadData();
-
