@@ -54,11 +54,7 @@ function populateJournalFilter() {
     const container = document.getElementById("journalCheckboxes");
     container.innerHTML = "";
 
-    const allJournals = [...new Set(
-        authorsData.map(a => a.journal)
-    )]
-        .filter(j => j && j.trim() !== "")
-        .sort();
+    const allJournals = [...new Set(authorsData.map(a => a.journal))].filter(j => j && j.trim() !== "").sort();
 
     allJournals.forEach(journal => {
         const id = "journal_" + journal.replace(/\W+/g, "_");
