@@ -1,11 +1,14 @@
+// GLOBAL DATA
 let authorsData = [];
+
+// Year bounds — will be detected from data
 let MIN_YEAR = 9999;
 let MAX_YEAR = 0;
 
 async function loadAuthors() {
     authorsData = await fetch("./data/authorsSub.json").then(r => r.json());
 
-    // detect bounds
+    // Detect min/max years automatically
     authorsData.forEach(a => {
         if (a.year < MIN_YEAR) MIN_YEAR = a.year;
         if (a.year > MAX_YEAR) MAX_YEAR = a.year;
@@ -15,6 +18,9 @@ async function loadAuthors() {
     updateAuthorsRankings();
 }
 
+/* -------------------------------
+   Populate Start/End Year Menus
+--------------------------------*/
 function populateYearDropdowns() {
     const startSel = document.getElementById("startYear");
     const endSel = document.getElementById("endYear");
@@ -23,67 +29,76 @@ function populateYearDropdowns() {
     endSel.innerHTML = "";
 
     for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
-        const s = document.createElement("option");
+        let s = document.createElement("option");
         s.value = y;
         s.textContent = y;
         startSel.appendChild(s);
 
-        const e = document.createElement("option");
+        let e = document.createElement("option");
         e.value = y;
         e.textContent = y;
         endSel.appendChild(e);
     }
 
-    // Default show entire range
+    // Default = full range
     startSel.value = MIN_YEAR;
     endSel.value = MAX_YEAR;
 }
 
-function computeAuthorRankings(startYear, endYear) {
-    // Step 1: filter by year
-    let filtered = authorsData.filter(a =>
-        a.year >= startYear &&
-        a.year <= endYear
+/* -------------------------------
+   Compute FULL Author Rankings
+--------------------------------*/
+function computeFullAuthorRanking(startYear, endYear) {
+    // Filter by year
+    let yearFiltered = authorsData.filter(a =>
+        a.year >= startYear && a.year <= endYear
     );
 
-    // Step 2: count articles per author
+    // Count articles per author
     const counts = {};
-    filtered.forEach(a => {
+    yearFiltered.forEach(a => {
         if (!counts[a.author]) counts[a.author] = 0;
         counts[a.author] += 1;
     });
 
-    // Step 3: build ranking array
-    const ranking = Object.keys(counts).map(author => ({
+    // Convert to ranking list
+    let ranking = Object.keys(counts).map(author => ({
         author: author,
         articles: counts[author]
     }));
 
-    // Step 4: sort and assign ranks ONCE
+    // Sort DESC
     ranking.sort((a, b) => b.articles - a.articles);
+
+    // Assign TRUE ranks
     ranking.forEach((r, i) => r.rank = i + 1);
 
     return ranking;
 }
 
+/* -------------------------------
+   Main Update Function
+--------------------------------*/
 function updateAuthorsRankings() {
     const startY = Number(document.getElementById("startYear").value);
     const endY = Number(document.getElementById("endYear").value);
-    const search = document.getElementById("authorSearch").value.trim().toLowerCase();
+    const searchTerm = document.getElementById("authorSearch").value.trim().toLowerCase();
 
-    // Step 1: compute full ranking
-    let fullRanking = computeAuthorRankings(startY, endY);
+    // Step 1: compute full ranking with correct ranks
+    let fullRanking = computeFullAuthorRanking(startY, endY);
 
-    // Step 2: apply search filter WITHOUT re-ranking
-    let filteredRanking = fullRanking.filter(r =>
-        r.author.toLowerCase().includes(search)
+    // Step 2: Apply search WITHOUT re-ranking
+    let filtered = fullRanking.filter(r =>
+        r.author.toLowerCase().includes(searchTerm)
     );
 
-    // Step 3: render the filtered list with original ranks
-    renderAuthorsTable(filteredRanking);
+    // Step 3: Display filtered list with original ranks
+    renderAuthorsTable(filtered);
 }
 
-
+/* -------------------------------
+   Render Table
+--------------------------------*/
 function renderAuthorsTable(rows) {
     const tbody = document.getElementById("authorsTableBody");
     tbody.innerHTML = "";
@@ -99,7 +114,13 @@ function renderAuthorsTable(rows) {
     });
 }
 
+/* -------------------------------
+   Event Listeners
+--------------------------------*/
 document.addEventListener("change", updateAuthorsRankings);
 document.getElementById("authorSearch").addEventListener("input", updateAuthorsRankings);
 
+/* -------------------------------
+   Start
+--------------------------------*/
 loadAuthors();
