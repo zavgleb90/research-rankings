@@ -1,6 +1,6 @@
 // GLOBAL DATA
 let universities = [];
-let authors = [];
+let authors = [];  // you can remove this if unused
 
 let MIN_YEAR = 9999;
 let MAX_YEAR = 0;
@@ -44,27 +44,55 @@ function populateYearDropdowns() {
     endSel.value = MAX_YEAR;
 }
 
-// Compute rankings
-function computeUniversityRankings(startYear, endYear) {
-    const filtered = universities.filter(r =>
+/* -----------------------------------------
+   Compute FULL University Ranking (correct)
+----------------------------------------- */
+function computeFullUniversityRanking(startYear, endYear) {
+    // Step 1: filter by year
+    const yearFiltered = universities.filter(r =>
         r.year >= startYear && r.year <= endYear
     );
 
+    // Step 2: count publications per university
     const counts = {};
-    filtered.forEach(row => {
-        if (!counts[row.university]) counts[row.university] = 0;
-        counts[row.university] += 1;
+    yearFiltered.forEach(r => {
+        if (!counts[r.university]) counts[r.university] = 0;
+        counts[r.university] += 1;
     });
 
-    const ranking = Object.keys(counts).map(uni => ({
+    // Step 3: convert to array
+    let ranking = Object.keys(counts).map(uni => ({
         university: uni,
         articles: counts[uni]
     }));
 
+    // Step 4: sort and assign TRUE ranks ONCE
     ranking.sort((a, b) => b.articles - a.articles);
     ranking.forEach((r, i) => r.rank = i + 1);
 
     return ranking;
+}
+
+/* -----------------------------------------
+   Update Rankings (preserve ranks)
+----------------------------------------- */
+function updateRankings() {
+    const startYear = Number(document.getElementById("startYear").value);
+    const endYear = Number(document.getElementById("endYear").value);
+
+    const searchInput = document.getElementById("universitySearch");
+    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+    // Step 1: compute full ranking with correct ranks
+    let fullRanking = computeFullUniversityRanking(startYear, endYear);
+
+    // Step 2: apply search WITHOUT re-ranking
+    let filteredRanking = fullRanking.filter(r =>
+        r.university.toLowerCase().includes(searchTerm)
+    );
+
+    // Step 3: render filtered results with original ranks
+    renderTable(filteredRanking);
 }
 
 // RENDER TABLE
@@ -83,19 +111,14 @@ function renderTable(rows) {
     });
 }
 
-// MAIN UPDATE FUNCTION
-function updateRankings() {
-    const startYear = Number(document.getElementById("startYear").value);
-    const endYear = Number(document.getElementById("endYear").value);
-
-    if (startYear > endYear) return;
-
-    const rankings = computeUniversityRankings(startYear, endYear);
-    renderTable(rankings);
-}
-
 // Listeners
 document.addEventListener("change", updateRankings);
+
+// FIX: define uniSearch before using it
+const uniSearch = document.getElementById("universitySearch");
+if (uniSearch) {
+    uniSearch.addEventListener("input", updateRankings);
+}
 
 // Start!
 loadData();
