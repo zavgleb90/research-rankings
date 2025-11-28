@@ -4,8 +4,8 @@ let authors = [];
 
 // Load data on startup
 async function loadData() {
-    universities = await fetch("data/universities.json").then(r => r.json());
-    authors = await fetch("data/authors.json").then(r => r.json());
+    universities = await fetch("data/universitiesSub.json").then(r => r.json());
+    authors = await fetch("data/authorsSub.json").then(r => r.json());
     updateRankings(); // initial page load
 }
 
@@ -66,3 +66,4 @@ document.getElementById("yearRange").addEventListener("change", updateRankings);
 
 // Start!
 loadData();
+
