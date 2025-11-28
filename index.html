@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>World Research Rankings</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header>
+  <div class="logo">📚 Research Rankings</div>
+  <nav>
+    <a href="#" class="active">Rankings</a>
+    <a href="#">Universities</a>
+    <a href="#">Authors</a>
+    <a href="#">Journals</a>
+    <a href="#">Methodology</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- FILTER PANEL -->
+  <aside class="filter-panel">
+    <h3>Filter</h3>
+
+    <div class="filter-group">
+      <label for="yearRange">Years</label>
+      <select id="yearRange">
+        <option value="2020-2024">2020–2024</option>
+        <option value="2015-2019">2015–2019</option>
+        <option value="2010-2014">2010–2014</option>
+      </select>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <section class="main-content">
+    <h1>World University Research Rankings</h1>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>University</th>
+          <th>Articles</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody">
+        <!-- JS will insert rows here -->
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

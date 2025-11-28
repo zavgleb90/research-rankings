@@ -1,0 +1,138 @@
+/* -------------------------
+   COLOR PALETTE (Earth Tones)
+-------------------------- */
+:root {
+  --green-dark: #2d5a4a;
+  --green-mid: #4f7f5e;
+  --green-light: #7fa886;
+
+  --tan-light: #f5e7d3;
+  --tan-mid: #e0c9a6;
+  --tan-dark: #c9a570;
+
+  --brown-dark: #8b4a2b;
+  --text-dark: #3a2c1f;
+  --text-light: #ffffff;
+}
+
+/* -------------------------
+   GLOBAL STYLES
+-------------------------- */
+body {
+  margin: 0;
+  font-family: Georgia, serif;
+  background: var(--green-light);
+  color: var(--text-dark);
+}
+
+/* -------------------------
+   HEADER
+-------------------------- */
+header {
+  background: var(--tan-light);
+  padding: 15px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 4px solid var(--brown-dark);
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--brown-dark);
+}
+
+nav a {
+  margin-left: 24px;
+  text-decoration: none;
+  color: var(--text-dark);
+  font-weight: bold;
+}
+
+nav a.active {
+  color: var(--brown-dark);
+}
+
+/* -------------------------
+   MAIN LAYOUT
+-------------------------- */
+.container {
+  display: flex;
+  padding: 20px;
+  gap: 20px;
+}
+
+/* -------------------------
+   FILTER PANEL
+-------------------------- */
+.filter-panel {
+  width: 260px;
+  background: var(--green-mid);
+  padding: 20px;
+  border-radius: 12px;
+  color: var(--text-light);
+  height: fit-content;
+}
+
+.filter-panel h3 {
+  margin-top: 0;
+}
+
+.filter-group label {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.filter-group select {
+  padding: 6px;
+  width: 100%;
+  border-radius: 6px;
+  border: none;
+}
+
+/* -------------------------
+   MAIN CONTENT AREA
+-------------------------- */
+.main-content {
+  background: var(--tan-light);
+  padding: 25px 30px;
+  border-radius: 12px;
+  flex: 1;
+}
+
+.main-content h1 {
+  margin-top: 0;
+  color: var(--brown-dark);
+}
+
+/* -------------------------
+   TABLE DESIGN
+-------------------------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+th {
+  background: var(--brown-dark);
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+td {
+  padding: 10px;
+  border-bottom: 1px solid var(--tan-mid);
+}
+
+tr:nth-child(even) td {
+  background: var(--tan-mid);
+}
+
+/* Flag icons (future use) */
+.flag {
+  width: 28px;
+  height: auto;
+}
