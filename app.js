@@ -88,10 +88,10 @@ function updateRankings() {
     const searchInput = document.getElementById("universitySearch");
     const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : "";
 
-    // Step 1: compute full ranking
+    // Step 1: compute full ranking with correct ranks
     let fullRanking = computeFullUniversityRanking(startYear, endYear);
 
-    // Step 2: search filter WITHOUT re-ranking
+    // Step 2: apply search WITHOUT re-ranking
     let filteredRanking = fullRanking.filter(r =>
         r.university.toLowerCase().includes(searchTerm)
     );
@@ -121,7 +121,7 @@ function renderTable(rows) {
 // Listeners
 document.addEventListener("change", updateRankings);
 
-// Correct listener for search box:
+// Search listener
 document.addEventListener("DOMContentLoaded", () => {
     const uniSearch = document.getElementById("universitySearch");
     if (uniSearch) {
