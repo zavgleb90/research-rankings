@@ -2,42 +2,49 @@
 let universities = [];
 let authors = [];
 
-// Available years (you said 2016–2024)
-const MIN_YEAR = 2010;
-const MAX_YEAR = 2024;
-
-// Populate dropdowns
-function populateYearDropdowns() {
-    const startSel = document.getElementById("startYear");
-    const endSel = document.getElementById("endYear");
-
-    for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
-        let opt1 = document.createElement("option");
-        opt1.value = y;
-        opt1.textContent = y;
-        startSel.appendChild(opt1);
-
-        let opt2 = document.createElement("option");
-        opt2.value = y;
-        opt2.textContent = y;
-        endSel.appendChild(opt2);
-    }
-
-    // Default range = 2016–2024
-    startSel.value = 2016;
-    endSel.value = 2024;
-}
+let MIN_YEAR = 9999;
+let MAX_YEAR = 0;
 
 // Load data on startup
 async function loadData() {
     universities = await fetch("./data/universitiesSub.json").then(r => r.json());
-    authors = await fetch("./data/authorsSub.json").then(r => r.json());
+
+    // detect year range automatically
+    universities.forEach(r => {
+        if (r.year < MIN_YEAR) MIN_YEAR = r.year;
+        if (r.year > MAX_YEAR) MAX_YEAR = r.year;
+    });
 
     populateYearDropdowns();
     updateRankings();
 }
 
-// Compute university ranking
+// Populate dropdowns using detected min/max
+function populateYearDropdowns() {
+    const startSel = document.getElementById("startYear");
+    const endSel = document.getElementById("endYear");
+
+    startSel.innerHTML = "";
+    endSel.innerHTML = "";
+
+    for (let y = MIN_YEAR; y <= MAX_YEAR; y++) {
+        let s = document.createElement("option");
+        s.value = y;
+        s.textContent = y;
+        startSel.appendChild(s);
+
+        let e = document.createElement("option");
+        e.value = y;
+        e.textContent = y;
+        endSel.appendChild(e);
+    }
+
+    // Default = ALL YEARS
+    startSel.value = MIN_YEAR;
+    endSel.value = MAX_YEAR;
+}
+
+// Compute rankings
 function computeUniversityRankings(startYear, endYear) {
     const filtered = universities.filter(r =>
         r.year >= startYear && r.year <= endYear
@@ -60,7 +67,7 @@ function computeUniversityRankings(startYear, endYear) {
     return ranking;
 }
 
-// Render HTML table
+// RENDER TABLE
 function renderTable(rows) {
     const tbody = document.getElementById("tableBody");
     tbody.innerHTML = "";
@@ -76,7 +83,7 @@ function renderTable(rows) {
     });
 }
 
-// Update all
+// MAIN UPDATE FUNCTION
 function updateRankings() {
     const startYear = Number(document.getElementById("startYear").value);
     const endYear = Number(document.getElementById("endYear").value);
@@ -87,7 +94,7 @@ function updateRankings() {
     renderTable(rankings);
 }
 
-// Event listeners
+// Listeners
 document.addEventListener("change", updateRankings);
 
 // Start!
