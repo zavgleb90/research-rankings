@@ -11,11 +11,11 @@
 <header>
   <div class="logo">📚 Research Rankings</div>
   <nav>
-    <a href="#" class="active">Rankings</a>
-    <a href="#">Universities</a>
-    <a href="#">Authors</a>
-    <a href="#">Journals</a>
-    <a href="#">Methodology</a>
+    <a href="index.html" class="active">Rankings</a>
+    <a href="universities.html">Universities</a>
+    <a href="authors.html">Authors</a>
+    <a href="journals.html">Journals</a>
+    <a href="methodology.html">Methodology</a>
   </nav>
 </header>
 
@@ -26,13 +26,15 @@
     <h3>Filter</h3>
 
     <div class="filter-group">
-      <label for="yearRange">Years</label>
-      <select id="yearRange">
-        <option value="2020-2024">2020–2024</option>
-        <option value="2015-2019">2015–2019</option>
-        <option value="2010-2014">2010–2014</option>
-      </select>
+      <label for="startYear">Start Year</label>
+      <select id="startYear"></select>
     </div>
+
+    <div class="filter-group">
+      <label for="endYear">End Year</label>
+      <select id="endYear"></select>
+    </div>
+
   </aside>
 
   <!-- MAIN CONTENT -->
