@@ -84,9 +84,7 @@ function updateRankings() {
 
     const startYear = Number(startSel.value);
     const endYear = Number(endSel.value);
-
-    const searchInput = document.getElementById("universitySearch");
-    const searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : "";
+    const searchTerm = document.getElementById("universitySearch").value.trim().toLowerCase() : "";
 
     // Step 1: compute full ranking with correct ranks
     let fullRanking = computeFullUniversityRanking(startYear, endYear);
@@ -126,6 +124,7 @@ const uniSearch = document.getElementById("universitySearch").addEventListener("
 
 // Start!
 loadData();
+
 
 
 
