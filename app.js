@@ -1,38 +1,48 @@
 // GLOBAL DATA
-let universities = [];
+let universitiesData = [];
 
 let MIN_YEAR = 9999;
 let MAX_YEAR = 0;
 
-let uniJournalDisciplineMap = {};
-let uniJournalGroupMap = {};
+/* =======================================================
+   LOAD DATA
+======================================================= */
+async function loadUniversities() {
+    universitiesData = await fetch("./data/universitiesSub.json").then(r => r.json());
 
-// Load data on startup
-async function loadData() {
-    universities = await fetch("./data/universitiesSub.json").then(r => r.json());
+    // Build journal → discipline mapping
+    window.journalDisciplineMap = {};
+    universitiesData.forEach(u => {
+        journalDisciplineMap[u.journal] = u.disciplineAbbr;
+    });
 
-    // detect year range automatically
-    universities.forEach(r => {
-        if (r.year < MIN_YEAR) MIN_YEAR = r.year;
-        if (r.year > MAX_YEAR) MAX_YEAR = r.year;
+    // Build journal → group mapping
+    window.journalGroupMap = {};
+    universitiesData.forEach(u => {
+        journalGroupMap[u.journal] = {
+            utd24: u.utd24,
+            ft50: u.ft50
+        };
+    });
+
+    // Detect year bounds
+    universitiesData.forEach(u => {
+        if (u.year < MIN_YEAR) MIN_YEAR = u.year;
+        if (u.year > MAX_YEAR) MAX_YEAR = u.year;
     });
 
     populateYearDropdowns();
-    populateUniDisciplineDropdown();
-    populateUniJournalCheckboxes();
-    populateUniGroupFilter();
-
-    updateRankings();
+    populateJournalCheckboxes();
+    populateDisciplineDropdown();
+    updateUniversityRankings();
 }
 
-/* -----------------------------------------
-   Populate Year Dropdowns
------------------------------------------ */
+/* =======================================================
+   YEAR FILTER
+======================================================= */
 function populateYearDropdowns() {
     const startSel = document.getElementById("startYear");
     const endSel = document.getElementById("endYear");
-
-    if (!startSel || !endSel) return;
 
     startSel.innerHTML = "";
     endSel.innerHTML = "";
@@ -53,155 +63,21 @@ function populateYearDropdowns() {
     endSel.value = MAX_YEAR;
 }
 
-/* -----------------------------------------
-   Compute FULL University Ranking
------------------------------------------ */
-function computeFullUniversityRanking(startYear, endYear) {
-    let filtered = universities.filter(r =>
-        r.year >= startYear &&
-        r.year <= endYear &&
-        passesDisciplineFilter(r) &&
-        passesGroupFilter(r) &&
-        passesJournalFilter(r)
-    );
-
-    // Count publications per university
-    const counts = {};
-    filtered.forEach(r => {
-        if (!counts[r.university]) counts[r.university] = 0;
-        counts[r.university] += 1;
-    });
-
-    let ranking = Object.keys(counts).map(uni => ({
-        university: uni,
-        articles: counts[uni]
-    }));
-
-    ranking.sort((a, b) => b.articles - a.articles);
-    ranking.forEach((r, i) => r.rank = i + 1);
-
-    return ranking;
-}
-
-/* -----------------------------------------
-   FILTER LOGIC
------------------------------------------ */
-
-// Discipline filter
-function passesDisciplineFilter(row) {
-    const sel = document.getElementById("uniDisciplineFilter");
-    if (!sel || sel.value === "ALL") return true;
-    return row.disciplineAbbr === sel.value;
-}
-
-// Group filter (UTD24 / FT50)
-function passesGroupFilter(row) {
-    const sel = document.getElementById("uniGroupFilter");
-    if (!sel || sel.value === "ALL") return true;
-
-    if (sel.value === "UTD24") return row.utd24 === 1;
-    if (sel.value === "FT50") return row.ft50 === 1;
-
-    return true;
-}
-
-// Journal checkboxes
-function passesJournalFilter(row) {
-    const checked = [...document.querySelectorAll("#uniJournalCheckboxes input:checked")]
-                    .map(cb => cb.value);
-
-    if (checked.length === 0) return true;  // no journal filter applied
-
-    return checked.includes(row.journal);
-}
-
-/* -----------------------------------------
-   Dropdown: Discipline
------------------------------------------ */
-function populateUniDisciplineDropdown() {
-    const sel = document.getElementById("uniDisciplineFilter");
-    sel.innerHTML = '<option value="ALL">All Disciplines</option>';
-
-    const disc = [...new Set(universities.map(u => u.disciplineAbbr))].sort();
-    disc.forEach(d => {
-        const opt = document.createElement("option");
-        opt.value = d;
-        opt.textContent = d;
-        sel.appendChild(opt);
-    });
-
-    // Build journal → discipline map
-    universities.forEach(r => {
-        uniJournalDisciplineMap[r.journal] = r.disciplineAbbr;
-    });
-
-    // Listener: discipline → auto-check journals
-    sel.addEventListener("change", () => {
-        const val = sel.value;
-
-        if (val === "ALL") {
-            updateRankings();
-            return;
-        }
-
-        document.getElementById("uniGroupFilter").value = "ALL";
-
-        document.querySelectorAll("#uniJournalCheckboxes input").forEach(cb => {
-            cb.checked = (uniJournalDisciplineMap[cb.value] === val);
-        });
-
-        updateRankings();
-    });
-}
-
-/* -----------------------------------------
-   Dropdown: Group (UTD/FT)
------------------------------------------ */
-function populateUniGroupFilter() {
-    const sel = document.getElementById("uniGroupFilter");
-
-    // Build journal → group map
-    universities.forEach(r => {
-        uniJournalGroupMap[r.journal] = {
-            utd24: r.utd24,
-            ft50: r.ft50
-        };
-    });
-
-    // Listener
-    sel.addEventListener("change", () => {
-        const val = sel.value;
-
-        if (val === "ALL") {
-            updateRankings();
-            return;
-        }
-
-        document.getElementById("uniDisciplineFilter").value = "ALL";
-
-        document.querySelectorAll("#uniJournalCheckboxes input").forEach(cb => {
-            const g = uniJournalGroupMap[cb.value];
-            if (val === "UTD24") cb.checked = (g.utd24 === 1);
-            if (val === "FT50") cb.checked = (g.ft50 === 1);
-        });
-
-        updateRankings();
-    });
-}
-
-/* -----------------------------------------
-   Journal Checkboxes
------------------------------------------ */
-function populateUniJournalCheckboxes() {
-    const container = document.getElementById("uniJournalCheckboxes");
+/* =======================================================
+   JOURNAL FILTER (CHECKBOXES)
+======================================================= */
+function populateJournalCheckboxes() {
+    const container = document.getElementById("journalCheckboxes");
     container.innerHTML = "";
 
     const allJournals = [...new Set(
-        universities.map(u => u.journal).filter(j => j && j.trim() !== "")
+        universitiesData
+            .map(u => u.journal)
+            .filter(j => j && j.trim() !== "")
     )].sort();
 
     allJournals.forEach(journal => {
-        const id = "uni_journal_" + journal.replace(/\W+/g, "_");
+        const id = "journal_" + journal.replace(/\W+/g, "_");
 
         const div = document.createElement("div");
         div.innerHTML = `
@@ -213,59 +89,153 @@ function populateUniJournalCheckboxes() {
         container.appendChild(div);
     });
 
-    // Manual click = reset discipline & group
-    document.querySelectorAll("#uniJournalCheckboxes input").forEach(cb => {
+    // Attach listener AFTER all checkboxes exist
+    document.querySelectorAll("#journalCheckboxes input").forEach(cb => {
         cb.addEventListener("change", () => {
-            document.getElementById("uniDisciplineFilter").value = "ALL";
-            document.getElementById("uniGroupFilter").value = "ALL";
-            updateRankings();
+
+            // Manual journal change → reset discipline/group
+            document.getElementById("disciplineFilter").value = "ALL";
+            document.getElementById("groupFilter").value = "ALL";
+
+            updateUniversityRankings();
         });
     });
 }
 
-/* -----------------------------------------
-   Reset Button
------------------------------------------ */
-document.getElementById("uniResetFiltersBtn")?.addEventListener("click", () => {
+/* =======================================================
+   DISCIPLINE FILTER
+======================================================= */
+function populateDisciplineDropdown() {
+    const sel = document.getElementById("disciplineFilter");
+    const disciplines = [...new Set(universitiesData.map(u => u.disciplineAbbr))].sort();
 
-    document.getElementById("uniDisciplineFilter").value = "ALL";
-    document.getElementById("uniGroupFilter").value = "ALL";
+    disciplines.forEach(d => {
+        const opt = document.createElement("option");
+        opt.value = d;
+        opt.textContent = d;
+        sel.appendChild(opt);
+    });
 
-    document.querySelectorAll("#uniJournalCheckboxes input").forEach(cb => cb.checked = false);
+    sel.value = "ALL";
+}
 
-    document.getElementById("startYear").value = MIN_YEAR;
-    document.getElementById("endYear").value = MAX_YEAR;
+/* =======================================================
+   COMPUTE FULL UNIVERSITY RANKING (Preserve actual ranks)
+======================================================= */
+function computeFullUniversityRanking(startYear, endYear, selectedJournals, selectedDiscipline, selectedGroup) {
 
-    const uniSearch = document.getElementById("universitySearch");
-    if (uniSearch) uniSearch.value = "";
+    // STEP 1 — YEAR filter
+    let filtered = universitiesData.filter(u =>
+        u.year >= startYear && u.year <= endYear
+    );
 
-    updateRankings();
-});
+    // STEP 2 — JOURNAL CHECKBOX filter
+    if (selectedJournals.length > 0) {
+        filtered = filtered.filter(u => selectedJournals.includes(u.journal));
+    }
 
-/* -----------------------------------------
-   UPDATE RANKINGS
------------------------------------------ */
-function updateRankings() {
+    // STEP 3 — DISCIPLINE filter
+    if (selectedDiscipline !== "ALL") {
+        filtered = filtered.filter(u => u.disciplineAbbr === selectedDiscipline);
+    }
+
+    // STEP 4 — GROUP filter (UTD24 / FT50)
+    if (selectedGroup === "UTD24") {
+        filtered = filtered.filter(u => u.utd24 === 1);
+    } else if (selectedGroup === "FT50") {
+        filtered = filtered.filter(u => u.ft50 === 1);
+    }
+
+    // STEP 5 — Count papers per university
+    const counts = {};
+    filtered.forEach(u => {
+        if (!counts[u.university]) counts[u.university] = 0;
+        counts[u.university] += 1;
+    });
+
+    // Convert to ranking array
+    let ranking = Object.keys(counts).map(university => ({
+        university: university,
+        articles: counts[university]
+    }));
+
+    // Sort & assign true rank
+    ranking.sort((a, b) => b.articles - a.articles);
+    ranking.forEach((r, i) => r.rank = i + 1);
+
+    return ranking;
+}
+
+/* =======================================================
+   UPDATE TABLE
+======================================================= */
+function updateUniversityRankings() {
+
     const startYear = Number(document.getElementById("startYear").value);
-    const endYear = Number(document.getElementById("endYear").value);
-    const searchTerm = document.getElementById("universitySearch")?.value.trim().toLowerCase() || "";
+    const endYear   = Number(document.getElementById("endYear").value);
 
-    let fullRanking = computeFullUniversityRanking(startYear, endYear);
+    const searchTerm = document.getElementById("universitySearch").value.trim().toLowerCase();
 
-    let filtered = fullRanking.filter(r =>
+    const selectedDiscipline = document.getElementById("disciplineFilter").value;
+    const selectedGroup = document.getElementById("groupFilter").value;
+
+    const selectedJournals = Array.from(
+        document.querySelectorAll("#journalCheckboxes input:checked")
+    ).map(cb => cb.value);
+
+    // Compute rankings
+    let fullRanking = computeFullUniversityRanking(
+        startYear,
+        endYear,
+        selectedJournals,
+        selectedDiscipline,
+        selectedGroup
+    );
+
+    // Apply search — preserve rank
+    let filteredRanking = fullRanking.filter(r =>
         r.university.toLowerCase().includes(searchTerm)
     );
 
-    renderTable(filtered);
+    renderUniversityTable(filteredRanking);
 }
 
-/* -----------------------------------------
-   RENDER TABLE
------------------------------------------ */
-function renderTable(rows) {
-    const tbody = document.getElementById("tableBody");
-    if (!tbody) return;
+/* =======================================================
+   AUTO-SELECT JOURNALS FOR DISCIPLINE
+======================================================= */
+function applyDisciplineFilter(discipline) {
+    document.querySelectorAll("#journalCheckboxes input").forEach(cb => {
+        const journal = cb.value;
+        const journalDisc = journalDisciplineMap[journal];
+        cb.checked = (journalDisc === discipline);
+    });
 
+    updateUniversityRankings();
+}
+
+/* =======================================================
+   AUTO-SELECT JOURNALS FOR GROUP (UTD24 / FT50)
+======================================================= */
+function applyGroupFilter(group) {
+    document.querySelectorAll("#journalCheckboxes input").forEach(cb => {
+        const journal = cb.value;
+        const g = journalGroupMap[journal];
+
+        if (group === "UTD24") {
+            cb.checked = (g.utd24 === 1);
+        } else if (group === "FT50") {
+            cb.checked = (g.ft50 === 1);
+        }
+    });
+
+    updateUniversityRankings();
+}
+
+/* =======================================================
+   RENDER TABLE
+======================================================= */
+function renderUniversityTable(rows) {
+    const tbody = document.getElementById("tableBody");
     tbody.innerHTML = "";
 
     rows.forEach(r => {
@@ -279,17 +249,70 @@ function renderTable(rows) {
     });
 }
 
-/* -----------------------------------------
-   Listeners
------------------------------------------ */
-document.addEventListener("change", updateRankings);
+/* =======================================================
+   EVENT LISTENERS
+======================================================= */
+document.addEventListener("change", updateUniversityRankings);
+document.getElementById("universitySearch").addEventListener("input", updateUniversityRankings);
 
-document.addEventListener("DOMContentLoaded", () => {
-    const uniSearch = document.getElementById("universitySearch");
-    if (uniSearch) {
-        uniSearch.addEventListener("input", updateRankings);
+// Discipline → auto-select journals
+document.getElementById("disciplineFilter").addEventListener("change", function () {
+    const val = this.value;
+
+    if (val === "ALL") {
+        updateUniversityRankings();
+        return;
     }
+
+    // Reset group filter
+    document.getElementById("groupFilter").value = "ALL";
+
+    applyDisciplineFilter(val);
 });
 
-// Start!
-loadData();
+// Group → auto-select journals
+document.getElementById("groupFilter").addEventListener("change", function () {
+    const val = this.value;
+
+    if (val === "ALL") {
+        updateUniversityRankings();
+        return;
+    }
+
+    // Reset discipline filter
+    document.getElementById("disciplineFilter").value = "ALL";
+
+    applyGroupFilter(val);
+});
+
+// Reset button
+document.getElementById("resetFiltersBtn").addEventListener("click", resetAllFilters);
+
+/* =======================================================
+   RESET ALL FILTERS
+======================================================= */
+function resetAllFilters() {
+
+    // Reset search
+    document.getElementById("universitySearch").value = "";
+
+    // Reset discipline and group
+    document.getElementById("disciplineFilter").value = "ALL";
+    document.getElementById("groupFilter").value = "ALL";
+
+    // Reset years
+    document.getElementById("startYear").value = MIN_YEAR;
+    document.getElementById("endYear").value = MAX_YEAR;
+
+    // Uncheck all journals
+    document.querySelectorAll("#journalCheckboxes input").forEach(cb => {
+        cb.checked = false;
+    });
+
+    updateUniversityRankings();
+}
+
+/* =======================================================
+   START
+======================================================= */
+loadUniversities();
