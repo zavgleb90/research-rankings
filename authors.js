@@ -9,6 +9,20 @@ let MAX_YEAR = 0;
 ======================================================= */
 async function loadAuthors() {
     authorsData = await fetch("./data/authorsSub.json").then(r => r.json());
+    // Build journal → discipline mapping
+    window.journalDisciplineMap = {};
+    authorsData.forEach(a => {
+        journalDisciplineMap[a.journal] = a.disciplineAbbr;
+    });
+   
+    // Build journal → group mapping
+    window.journalGroupMap = {};
+    authorsData.forEach(a => {
+        journalGroupMap[a.journal] = {
+            utd24: a.utd24,
+            ft50: a.ft50
+        };
+    });
 
     // Detect year bounds
     authorsData.forEach(a => {
@@ -72,11 +86,21 @@ function populateJournalCheckboxes() {
             </label>
         `;
         container.appendChild(div);
+    });
 
-        // Event listener for each checkbox
-        div.querySelector("input").addEventListener("change", updateAuthorsRankings);
+    // Attach listener AFTER all checkboxes exist
+    document.querySelectorAll("#journalCheckboxes input").forEach(cb => {
+        cb.addEventListener("change", () => {
+
+            // User manually changed journals → reset discipline/group
+            document.getElementById("disciplineFilter").value = "ALL";
+            document.getElementById("groupFilter").value = "ALL";
+
+            updateAuthorsRankings();
+        });
     });
 }
+
 
 /* =======================================================
    DISCIPLINE FILTER
@@ -177,6 +201,37 @@ function updateAuthorsRankings() {
 }
 
 /* =======================================================
+   Function: check/uncheck journal boxes for a discipline
+======================================================= */
+function applyDisciplineFilter(discipline) {
+    document.querySelectorAll("#journalCheckboxes input").forEach(cb => {
+        const journal = cb.value;
+        const journalDisc = journalDisciplineMap[journal];
+        cb.checked = (journalDisc === discipline);
+    });
+
+    updateAuthorsRankings();
+}
+
+/* =======================================================
+   Function: check/uncheck journal boxes for a group (UTD24 / FT50)
+======================================================= */
+function applyGroupFilter(group) {
+    document.querySelectorAll("#journalCheckboxes input").forEach(cb => {
+        const journal = cb.value;
+        const g = journalGroupMap[journal];
+
+        if (group === "UTD24") {
+            cb.checked = (g.utd24 === 1);
+        } else if (group === "FT50") {
+            cb.checked = (g.ft50 === 1);
+        }
+    });
+
+    updateAuthorsRankings();
+}
+
+/* =======================================================
    RENDER TABLE
 ======================================================= */
 function renderAuthorsTable(rows) {
@@ -199,8 +254,39 @@ function renderAuthorsTable(rows) {
 ======================================================= */
 document.addEventListener("change", updateAuthorsRankings);
 document.getElementById("authorSearch").addEventListener("input", updateAuthorsRankings);
-document.getElementById("disciplineFilter").addEventListener("change", updateAuthorsRankings);
-document.getElementById("groupFilter").addEventListener("change", updateAuthorsRankings);
+
+// Discipline → auto-select journals
+document.getElementById("disciplineFilter").addEventListener("change", function () {
+    const val = this.value;
+
+    if (val === "ALL") {
+        updateAuthorsRankings();
+        return;
+    }
+
+    // Reset group filter
+    document.getElementById("groupFilter").value = "ALL";
+
+    applyDisciplineFilter(val);   // checks only discipline journals
+    updateAuthorsRankings();
+});
+
+// Group → auto-select journals
+document.getElementById("groupFilter").addEventListener("change", function () {
+    const val = this.value;
+
+    if (val === "ALL") {
+        updateAuthorsRankings();
+        return;
+    }
+
+    // Reset discipline filter
+    document.getElementById("disciplineFilter").value = "ALL";
+
+    applyGroupFilter(val);        // checks only UTD24 / FT50 journals
+    updateAuthorsRankings();
+});
+
 
 /* =======================================================
    START
