@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Journal Rankings</title>
-<link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Journal Research Summary</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -20,11 +20,36 @@
 </header>
 
 <div class="container">
+
+  <aside class="filter-panel">
+    <h3>Filter</h3>
+
+    <div class="filter-group">
+      <label for="startYear">Start Year</label>
+      <select id="startYear"></select>
+    </div>
+
+    <div class="filter-group">
+      <label for="endYear">End Year</label>
+      <select id="endYear"></select>
+    </div>
+
+    <div class="filter-group">
+      <label for="journalSearch">Search Journal</label>
+      <input id="journalSearch" type="text" placeholder="Type a journal name...">
+    </div>
+
+    <button id="resetJournalFilters" class="reset-btn">Reset Filters</button>
+  </aside>
+
   <section class="main-content">
-    <h1>Journal Rankings</h1>
-    <p>Coming soon...</p>
+    <h1>Journal Summary Statistics</h1>
+
+    <div id="journalsContainer"></div>
   </section>
+
 </div>
 
+<script src="journals.js"></script>
 </body>
 </html>
