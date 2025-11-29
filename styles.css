@@ -109,6 +109,22 @@ nav a.active {
     color: black;
 }
 
+.reset-btn {
+    width: 100%;
+    padding: 10px;
+    background: var(--brown-dark);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.reset-btn:hover {
+    background: #6f341e;
+}
+
 /* -------------------------
    MAIN CONTENT AREA
 -------------------------- */
@@ -154,5 +170,6 @@ tr:nth-child(even) td {
   width: 28px;
   height: auto;
 }
+
 
 
