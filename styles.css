@@ -171,5 +171,23 @@ tr:nth-child(even) td {
   height: auto;
 }
 
+.journal-block {
+    background: var(--tan-light);
+    padding: 20px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    border: 1px solid var(--tan-dark);
+}
+
+.journal-block h2 {
+    color: var(--brown-dark);
+    margin-bottom: 10px;
+}
+
+.journal-block ul {
+    margin-top: 5px;
+    padding-left: 20px;
+}
+
 
 
