@@ -192,12 +192,17 @@ function updateAuthorsRankings() {
         selectedGroup
     );
 
-    // Apply name search — preserve rank
-    let filteredRanking = fullRanking.filter(r =>
-        r.author.toLowerCase().includes(searchTerm)
-    );
-
-    renderAuthorsTable(filteredRanking);
+   // Apply name search — preserve rank
+   let filteredRanking = fullRanking.filter(r =>
+       r.author.toLowerCase().includes(searchTerm)
+   );
+   
+   // LIMIT TO TOP 100 ONLY WHEN NO SEARCH TERM
+   if (searchTerm === "") {
+       filteredRanking = filteredRanking.slice(0, 100);
+   }
+   
+   renderAuthorsTable(filteredRanking);
 }
 
 /* =======================================================
