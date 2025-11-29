@@ -287,6 +287,32 @@ document.getElementById("groupFilter").addEventListener("change", function () {
     updateAuthorsRankings();
 });
 
+document.getElementById("resetFiltersBtn").addEventListener("click", resetAllFilters);
+
+/* =======================================================
+   Function: Reset All Filters
+======================================================= */
+function resetAllFilters() {
+
+    // Reset author search
+    document.getElementById("authorSearch").value = "";
+
+    // Reset discipline and group dropdowns
+    document.getElementById("disciplineFilter").value = "ALL";
+    document.getElementById("groupFilter").value = "ALL";
+
+    // Reset year sliders or dropdowns
+    document.getElementById("startYear").value = MIN_YEAR;
+    document.getElementById("endYear").value = MAX_YEAR;
+
+    // Uncheck all journal checkboxes
+    document.querySelectorAll("#journalCheckboxes input").forEach(cb => {
+        cb.checked = false;
+    });
+
+    // Refresh table after resetting everything
+    updateAuthorsRankings();
+}
 
 /* =======================================================
    START
