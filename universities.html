@@ -34,9 +34,33 @@
       <select id="endYear"></select>
     </div>
 
+    <!-- FILTER BY JOURNAL -->
     <div class="filter-group">
       <label for="universitySearch">Search University</label>
       <input id="universitySearch" type="text" placeholder="Type a university name..." />
+    </div>
+
+    <!-- FILTER BY DISCIPLINE -->
+    <div class="filter-group">
+      <label>Filter by Discipline</label>
+      <select id="uniDisciplineFilter">
+          <option value="ALL">All Disciplines</option>
+      </select>
+    </div>
+    
+    <!-- FILTER BY JOURNAL GROUP -->
+    <div class="filter-group">
+      <label>Filter by Journal Group</label>
+      <select id="uniGroupFilter">
+          <option value="ALL">All Journals</option>
+          <option value="UTD24">UTD 24 Journals</option>
+          <option value="FT50">FT 50 Journals</option>
+      </select>
+    </div>
+    
+    <!-- RESET BUTTON -->
+    <div class="filter-group">
+        <button id="uniResetFiltersBtn" class="reset-btn">Reset All Filters</button>
     </div>
 
   </aside>
