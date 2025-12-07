@@ -189,5 +189,12 @@ tr:nth-child(even) td {
     padding-left: 20px;
 }
 
+/* Journals grid layout */
+#journalsContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+
 
 
