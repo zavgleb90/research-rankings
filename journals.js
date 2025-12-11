@@ -131,31 +131,20 @@ function updateJournalSummaries() {
 
 
         // ===========================
-        // RENDER THIS JOURNAL BLOCK
+        // RENDER THIS JOURNAL CARD (compact)
         // ===========================
         const block = document.createElement("div");
         block.className = "journal-block";
         block.innerHTML = `
             <h2>${journal}</h2>
             <p><strong>Total Articles (${startYear}–${endYear}):</strong> ${total}</p>
-
-            <h3>Top Universities</h3>
-            <ul>
-                ${topUni.map(u =>
-                    `<li>${u.university} — ${u.count} (${u.pct}%)</li>`
-                ).join("")}
-            </ul>
-
-            <h3>Top Authors</h3>
-            <ul>
-                ${topAuth.map(a =>
-                    `<li>${a.author} — ${a.count} (${a.pct}%)</li>`
-                ).join("")}
-            </ul>
-
-            <hr>
         `;
-
+        
+        // When clicking the card → open modal with details
+        block.addEventListener("click", () => {
+            openJournalModal(journal, startYear, endYear);
+        });
+        
         container.appendChild(block);
     });
 }
