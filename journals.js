@@ -148,6 +148,83 @@ function updateJournalSummaries() {
         container.appendChild(block);
     });
 }
+// ===============================
+// MODAL: SHOW JOURNAL DETAILS
+// ===============================
+function openJournalModal(journalName, startYear, endYear) {
+    const modal = document.getElementById("journalModal");
+    const titleEl = document.getElementById("modalJournalTitle");
+    const totalEl = document.getElementById("modalTotal");
+    const topUniList = document.getElementById("modalTopUniversities");
+    const topAuthList = document.getElementById("modalTopAuthors");
+
+    // Filter data for this journal + period
+    const journalAuthors = authorsData.filter(a =>
+        a.journal === journalName &&
+        a.year >= startYear &&
+        a.year <= endYear
+    );
+
+    const journalUniversities = universitiesData.filter(u =>
+        u.journal === journalName &&
+        u.year >= startYear &&
+        u.year <= endYear
+    );
+
+    const total = journalAuthors.length;
+
+    // --- Top Universities ---
+    let uniCounts = {};
+    journalUniversities.forEach(u => {
+        if (!uniCounts[u.university]) uniCounts[u.university] = 0;
+        uniCounts[u.university]++;
+    });
+
+    let topUni = Object.keys(uniCounts)
+        .map(u => ({
+            university: u,
+            count: uniCounts[u],
+            pct: ((uniCounts[u] / total) * 100).toFixed(1)
+        }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 3);
+
+    // --- Top Authors ---
+    let authCounts = {};
+    journalAuthors.forEach(a => {
+        if (!authCounts[a.author]) authCounts[a.author] = 0;
+        authCounts[a.author]++;
+    });
+
+    let topAuth = Object.keys(authCounts)
+        .map(a => ({
+            author: a,
+            count: authCounts[a],
+            pct: ((authCounts[a] / total) * 100).toFixed(1)
+        }))
+        .sort((a, b) => b.count - a.count)
+        .slice(0, 3);
+
+    // --- Populate modal content ---
+    titleEl.textContent = journalName;
+    totalEl.innerHTML = `<strong>Total Articles (${startYear}–${endYear}):</strong> ${total}`;
+
+    topUniList.innerHTML = topUni.map(u =>
+        `<li>${u.university} — ${u.count} (${u.pct}%)</li>`
+    ).join("");
+
+    topAuthList.innerHTML = topAuth.map(a =>
+        `<li>${a.author} — ${a.count} (${a.pct}%)</li>`
+    ).join("");
+
+    // Show modal
+    modal.style.display = "block";
+}
+
+function closeJournalModal() {
+    const modal = document.getElementById("journalModal");
+    modal.style.display = "none";
+}
 
 
 // ===============================
@@ -166,6 +243,17 @@ document.getElementById("resetJournalFilters").addEventListener("click", () => {
 // ===============================
 document.addEventListener("change", updateJournalSummaries);
 document.getElementById("journalSearch").addEventListener("input", updateJournalSummaries);
+
+// Close modal when clicking X
+document.getElementById("modalClose").addEventListener("click", closeJournalModal);
+
+// Close modal when clicking outside content
+window.addEventListener("click", (e) => {
+    const modal = document.getElementById("journalModal");
+    if (e.target === modal) {
+        closeJournalModal();
+    }
+});
 
 
 // ===============================
