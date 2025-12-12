@@ -244,8 +244,8 @@ tr:nth-child(even) td {
 -------------------------- */
 /* Inner wrapper to align Home tables with text */
 .home-inner {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 /* Two-table grid (unchanged layout) */
@@ -297,5 +297,6 @@ tr:nth-child(even) td {
 .mini-table tr:nth-child(even) td {
   background: var(--tan-mid);
 }
+
 
 
