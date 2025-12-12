@@ -169,7 +169,7 @@ function resetArticleFilters() {
 
     // Re-check all journals
     document.querySelectorAll("#articleJournalCheckboxes input").forEach(cb => {
-        cb.checked = true;
+        cb.checked = false;
     });
 
     // ✅ Clear results (do NOT run search)
