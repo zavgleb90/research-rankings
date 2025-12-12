@@ -21,7 +21,7 @@ async function loadArticles() {
     populateYearDropdowns();
     populateArticleJournalCheckboxes();
     setDefaultYearRangeToLastThreeYears();
-    runArticleSearch();  // initial load
+    // runArticleSearch();  // initial load
 }
 
 // ======================================
