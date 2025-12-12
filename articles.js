@@ -185,8 +185,11 @@ document.getElementById("articleSearch").addEventListener("keyup", (e) => {
 // Optional: update when year dropdowns change
 document.addEventListener("change", (e) => {
     if (e.target.id === "startYear" || e.target.id === "endYear") {
-        // We could auto-run or require explicit Search; here we choose explicit Search.
-        // Uncomment to auto-run:
+
+        // Ignore the initial automatic changes caused by loading the dropdowns
+        if (!window.articlesPageInitialized) return;
+
+        // Optional: auto-run search
         // runArticleSearch();
     }
 });
