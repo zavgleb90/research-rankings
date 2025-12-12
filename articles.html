@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Article Search</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header>
+  <div class="logo">📚 Research Rankings</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="universities.html">Universities</a>
+    <a href="authors.html">Authors</a>
+    <a href="journals.html">Journals</a>
+    <a href="articles.html" class="active">Articles</a>
+    <a href="methodology.html">Methodology</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- FILTER PANEL -->
+  <aside class="filter-panel">
+    <h3>Filter</h3>
+
+    <div class="filter-group">
+      <label for="startYear">Start Year</label>
+      <select id="startYear"></select>
+    </div>
+
+    <div class="filter-group">
+      <label for="endYear">End Year</label>
+      <select id="endYear"></select>
+    </div>
+
+    <div class="filter-group">
+      <label>Filter by Journal</label>
+      <div id="articleJournalCheckboxes" class="checkbox-list"></div>
+    </div>
+
+    <div class="filter-group">
+      <label for="articleSearch">Search by Article Title</label>
+      <input id="articleSearch" type="text" placeholder="Type part of a title...">
+    </div>
+
+    <div class="filter-group">
+      <button id="articleSearchBtn" class="reset-btn">Search</button>
+    </div>
+
+    <div class="filter-group">
+      <button id="articleResetBtn" class="reset-btn">Reset Filters</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <section class="main-content">
+    <h1>Article Search</h1>
+    <p>
+      Use the filters on the left to select years and journals, and optionally search by article title.
+      By default, we show all articles from the last three years.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Year</th>
+          <th>Journal</th>
+          <th>Title</th>
+          <th>Authors</th>
+        </tr>
+      </thead>
+      <tbody id="articleTableBody"></tbody>
+    </table>
+  </section>
+
+</div>
+
+<script src="articles.js"></script>
+</body>
+</html>
