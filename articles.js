@@ -197,4 +197,7 @@ document.addEventListener("change", (e) => {
 // ======================================
 // START
 // ======================================
-loadArticles();
+loadArticles().then(() => {
+    window.articlesPageInitialized = true;
+});
+
