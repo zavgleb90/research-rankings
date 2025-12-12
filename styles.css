@@ -234,5 +234,10 @@ tr:nth-child(even) td {
   cursor: pointer;
 }
 
+/* Article page: journal checkbox text color */
+#articleJournalCheckboxes label {
+    color: black;
+}
+
 
 
