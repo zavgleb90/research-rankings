@@ -10,18 +10,26 @@ let MAX_YEAR = 0;
 // LOAD DATA
 // ======================================
 async function loadArticles() {
-    articlesData = await fetch("./data/articlesSub.json").then(r => r.json());
+    try {
+        const resp = await fetch("./data/articlesSub.json");
+        articlesData = await resp.json();
 
-    // Detect year bounds
-    articlesData.forEach(a => {
-        if (a.year < MIN_YEAR) MIN_YEAR = a.year;
-        if (a.year > MAX_YEAR) MAX_YEAR = a.year;
-    });
+        // Detect year bounds
+        articlesData.forEach(a => {
+            if (a.year < MIN_YEAR) MIN_YEAR = a.year;
+            if (a.year > MAX_YEAR) MAX_YEAR = a.year;
+        });
 
-    populateYearDropdowns();
-    populateArticleJournalCheckboxes();
-    setDefaultYearRangeToLastThreeYears();
-    // runArticleSearch();  // initial load
+        populateYearDropdowns();
+        populateArticleJournalCheckboxes();
+        setDefaultYearRangeToLastThreeYears();
+
+        // 🔹 Do NOT call runArticleSearch() here
+        // Table stays empty until user clicks Search
+
+    } catch (err) {
+        console.error("Error loading articlesSub.json:", err);
+    }
 }
 
 // ======================================
@@ -46,7 +54,7 @@ function populateYearDropdowns() {
         endSel.appendChild(opt2);
     }
 
-    // Temporary default; we'll correct in setDefaultYearRangeToLastThreeYears()
+    // Temporary default; corrected next
     startSel.value = MIN_YEAR;
     endSel.value = MAX_YEAR;
 }
@@ -88,12 +96,10 @@ function populateArticleJournalCheckboxes() {
         container.appendChild(div);
     });
 
-    // Optional: update on checkbox change
+    // We are NOT auto-running search on checkbox change
     document.querySelectorAll("#articleJournalCheckboxes input").forEach(cb => {
         cb.addEventListener("change", () => {
-            // We won't reset anything here, just allow re-filtering on click
-            // If you want live update, uncomment:
-            // runArticleSearch();
+            // Leave it to user to click "Search"
         });
     });
 }
@@ -166,7 +172,11 @@ function resetArticleFilters() {
         cb.checked = true;
     });
 
+    // Option A: after reset, show default results
     runArticleSearch();
+
+    // Option B: after reset, show nothing
+    // If you prefer that, comment out runArticleSearch() above.
 }
 
 // ======================================
@@ -175,29 +185,14 @@ function resetArticleFilters() {
 document.getElementById("articleSearchBtn").addEventListener("click", runArticleSearch);
 document.getElementById("articleResetBtn").addEventListener("click", resetArticleFilters);
 
-// Optional: run search when Enter is pressed in title box
+// Run search when Enter is pressed in title search
 document.getElementById("articleSearch").addEventListener("keyup", (e) => {
     if (e.key === "Enter") {
         runArticleSearch();
     }
 });
 
-// Optional: update when year dropdowns change
-document.addEventListener("change", (e) => {
-    if (e.target.id === "startYear" || e.target.id === "endYear") {
-
-        // Ignore the initial automatic changes caused by loading the dropdowns
-        if (!window.articlesPageInitialized) return;
-
-        // Optional: auto-run search
-        // runArticleSearch();
-    }
-});
-
 // ======================================
 // START
 // ======================================
-loadArticles().then(() => {
-    window.articlesPageInitialized = true;
-});
-
+loadArticles();
