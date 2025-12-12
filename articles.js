@@ -89,7 +89,7 @@ function populateArticleJournalCheckboxes() {
         const div = document.createElement("div");
         div.innerHTML = `
             <label>
-                <input type="checkbox" value="${journal}" id="${id}" checked>
+                <input type="checkbox" value="${journal}" id="${id}">
                 ${journal}
             </label>
         `;
