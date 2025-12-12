@@ -172,11 +172,8 @@ function resetArticleFilters() {
         cb.checked = true;
     });
 
-    // Option A: after reset, show default results
-    runArticleSearch();
-
-    // Option B: after reset, show nothing
-    // If you prefer that, comment out runArticleSearch() above.
+    // ✅ Clear results (do NOT run search)
+    document.getElementById("articleTableBody").innerHTML = "";
 }
 
 // ======================================
