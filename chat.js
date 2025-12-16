@@ -34,10 +34,22 @@ async function sendMessage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: msg, history }),
     });
+
     const data = await resp.json();
 
-    thinkingBubble.textContent = data.reply || "No response.";
-    history.push({ role: "model", text: data.reply || "No response." });
+    if (!resp.ok) {
+      thinkingBubble.textContent = data?.error
+        ? `Error: ${data.error}`
+        : `Error: HTTP ${resp.status}`;
+      return;
+    }
+
+    if (data?.reply) {
+      thinkingBubble.textContent = data.reply;
+      history.push({ role: "model", text: data.reply });
+    } else {
+      thinkingBubble.textContent = "No reply returned by worker.";
+    }
   } catch (e) {
     thinkingBubble.textContent = "Error contacting chat service.";
   }
