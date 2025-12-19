@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>University Map</title>
+
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- Map library will be added later (Leaflet/MapLibre/etc.) -->
+</head>
+<body>
+
+<header>
+  <div class="logo">📚 Research Rankings</div>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="universities.html">Universities</a>
+    <a href="authors.html">Authors</a>
+    <a href="journals.html">Journals</a>
+    <a href="articles.html">Articles</a>
+    <a href="map.html" class="active">Map</a>
+    <a href="methodology.html">Methodology</a>
+  </nav>
+</header>
+
+<div class="container">
+
+  <!-- FILTER PANEL -->
+  <aside class="filter-panel">
+    <h3>Map Filters</h3>
+
+    <!-- Top N -->
+    <div class="filter-group">
+      <label for="topNSlider">Top N Universities</label>
+      <input
+        type="range"
+        id="topNSlider"
+        min="10"
+        max="200"
+        step="1"
+        value="50"
+      />
+      <div class="filter-inline">
+        <span id="topNValue">50</span>
+        <span class="muted">of 200</span>
+      </div>
+    </div>
+
+    <!-- Year range -->
+    <div class="filter-group">
+      <label for="startYear">Start Year</label>
+      <select id="startYear"></select>
+    </div>
+
+    <div class="filter-group">
+      <label for="endYear">End Year</label>
+      <select id="endYear"></select>
+    </div>
+
+    <!-- Discipline -->
+    <div class="filter-group">
+      <label for="disciplineFilter">Discipline</label>
+      <select id="disciplineFilter">
+        <option value="ALL">All Disciplines</option>
+        <!-- Populate dynamically later if you want -->
+        <option value="AC">AC</option>
+        <option value="ECON">ECON</option>
+        <option value="FIN">FIN</option>
+        <option value="IS">IS</option>
+        <option value="MD">MD</option>
+        <option value="M&O">M&O</option>
+        <option value="MKTG">MKTG</option>
+        <option value="OM">OM</option>
+        <option value="PRACT">PRACT</option>
+      </select>
+    </div>
+
+    <!-- Journal group -->
+    <div class="filter-group">
+      <label for="groupFilter">Journal Group</label>
+      <select id="groupFilter">
+        <option value="ALL">All Journals</option>
+        <option value="UTD24">UTD 24 Journals</option>
+        <option value="FT50">FT 50 Journals</option>
+      </select>
+    </div>
+
+    <!-- Journal checkboxes (collapsible) -->
+    <details class="filter-details" open>
+      <summary>Filter by Journal</summary>
+      <div id="journalCheckboxes" class="checkbox-list"></div>
+      <div class="small muted" style="margin-top:6px;">
+        Tip: no journals checked = all journals
+      </div>
+    </details>
+
+    <!-- Reset -->
+    <button id="resetMapFiltersBtn" class="reset-btn">Reset Filters</button>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <section class="main-content">
+    <div class="map-header">
+      <div>
+        <h1 style="margin-bottom:6px;">Global University Map</h1>
+        <p class="muted" style="margin-top:0;">
+          Visualize the geographic distribution of top universities based on selected filters.
+        </p>
+      </div>
+
+      <!-- Small legend placeholder -->
+      <div class="map-legend">
+        <div class="legend-title">Marker size</div>
+        <div class="legend-row"><span class="dot dot-sm"></span> Lower volume</div>
+        <div class="legend-row"><span class="dot dot-lg"></span> Higher volume</div>
+      </div>
+    </div>
+
+    <!-- Map container -->
+    <div id="mapContainer" class="map-container">
+      <!-- Placeholder until map library is added -->
+      <div class="map-placeholder">
+        <div class="map-placeholder-title">Map will appear here</div>
+        <div class="map-placeholder-sub">
+          Next: connect <code>university_geo.json</code> + ranking filters and render Top N markers.
+        </div>
+      </div>
+    </div>
+
+    <!-- Optional: small results strip under map (future) -->
+    <div class="map-footer-note muted">
+      Tip: Hover a marker to see university name, rank, articles, and country.
+    </div>
+  </section>
+
+</div>
+
+<!-- AI Chat -->
+<div id="chatMount"></div>
+<script src="chatEmbed.js"></script>
+
+<!-- Map page script placeholder -->
+<script src="map.js"></script>
+</body>
+</html>
