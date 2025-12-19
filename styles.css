@@ -520,5 +520,13 @@ tr:nth-child(even) td {
   }
 }
 
+.map-canvas {
+  width: 100%;
+  height: 720px; /* good for big monitors; adjust if needed */
+  border-radius: 12px;
+  border: 1px solid var(--tan-dark);
+  overflow: hidden;
+}
+
 
 
