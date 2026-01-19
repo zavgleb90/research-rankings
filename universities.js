@@ -209,7 +209,7 @@ function updateUniversityRankings() {
      rowsToRender = topWithTies(fullRanking, TOP_N);
    }
    
-   renderTable(rowsToRender);
+   renderUniversityTable(rowsToRender);
 
 
    // Apply name search — preserve rank
@@ -372,6 +372,7 @@ function topWithTies(fullRanking, N) {
    START
 ======================================================= */
 loadUniversities();
+
 
 
 
