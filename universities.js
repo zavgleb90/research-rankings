@@ -161,7 +161,7 @@ function computeFullUniversityRanking(startYear, endYear, selectedJournals, sele
 
     // Sort & assign true rank
     ranking.sort((a, b) => b.articles - a.articles);
-    ranking.forEach((r, i) => r.rank = i + 1);
+    assignTieRanks(ranking, "articles", "rank");
 
     return ranking;
 }
@@ -344,5 +344,6 @@ function assignTieRanks(sortedRows, valueKey, rankKey = "rank") {
    START
 ======================================================= */
 loadUniversities();
+
 
 
