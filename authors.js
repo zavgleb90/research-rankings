@@ -183,7 +183,7 @@ function updateAuthorsRankings() {
         document.querySelectorAll("#journalCheckboxes input:checked")
     ).map(cb => cb.value);
 
-    // Compute rankings
+    // Compute full ranking with tie ranks already assigned
     let fullRanking = computeFullAuthorRanking(
         startYear,
         endYear,
@@ -194,32 +194,19 @@ function updateAuthorsRankings() {
 
     const TOP_N = 100;
 
-    let searched = fullRanking.filter(r =>
-      r.author.toLowerCase().includes(searchTerm)
-    );
-   
     let rowsToRender;
-   
+
+    // If user typed something → show matches (even if rank > 100)
     if (searchTerm !== "") {
-      rowsToRender = searched; // show matches even if > 100
+        rowsToRender = fullRanking.filter(r =>
+            r.author.toLowerCase().includes(searchTerm)
+        );
     } else {
-      rowsToRender = topWithTies(fullRanking, TOP_N);
+        // No search → show Top 100 ranks INCLUDING ties at rank 100
+        rowsToRender = topWithTies(fullRanking, TOP_N);
     }
-   
+
     renderAuthorsTable(rowsToRender);
-
-
-    // Apply name search — preserve rank
-    let filteredRanking = fullRanking.filter(r =>
-        r.author.toLowerCase().includes(searchTerm)
-    );
-   
-    // LIMIT TO TOP 100 ONLY WHEN NO SEARCH TERM
-    if (searchTerm === "") {
-        filteredRanking = filteredRanking.slice(0, 100);
-    }
-   
-    renderAuthorsTable(filteredRanking);
 }
 
 /* =======================================================
