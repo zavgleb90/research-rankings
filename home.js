@@ -49,10 +49,9 @@ function computeTopCounts(data, keyField, startYear, endYear, topN) {
     articles: counts[name]
   }));
 
-  ranking.sort((a, b) => b.articles - a.articles);
-
   // assign ranks
-  ranking.forEach((r, i) => r.rank = i + 1);
+  ranking.sort((a, b) => b.articles - a.articles);
+  assignTieRanks(ranking, "articles", "rank");
 
   return ranking.slice(0, topN);
 }
@@ -72,6 +71,25 @@ function renderHomeTable(tbodyId, rows, mode) {
     `;
     tbody.appendChild(tr);
   });
+}
+
+function assignTieRanks(sortedRows, valueKey, rankKey = "rank") {
+  // sortedRows must already be sorted DESC by valueKey
+  let prevValue = null;
+  let currentRank = 0;
+
+  for (let i = 0; i < sortedRows.length; i++) {
+    const v = sortedRows[i][valueKey];
+
+    if (prevValue === null || v !== prevValue) {
+      // new value group → rank is position (i+1)
+      currentRank = i + 1;
+      prevValue = v;
+    }
+    sortedRows[i][rankKey] = currentRank;
+  }
+
+  return sortedRows;
 }
 
 loadHomeSnapshot();
