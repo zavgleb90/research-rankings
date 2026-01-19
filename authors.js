@@ -192,17 +192,34 @@ function updateAuthorsRankings() {
         selectedGroup
     );
 
-   // Apply name search — preserve rank
-   let filteredRanking = fullRanking.filter(r =>
-       r.author.toLowerCase().includes(searchTerm)
-   );
+    const TOP_N = 100;
+
+    let searched = fullRanking.filter(r =>
+      r.author.toLowerCase().includes(searchTerm)
+    );
    
-   // LIMIT TO TOP 100 ONLY WHEN NO SEARCH TERM
-   if (searchTerm === "") {
-       filteredRanking = filteredRanking.slice(0, 100);
-   }
+    let rowsToRender;
    
-   renderAuthorsTable(filteredRanking);
+    if (searchTerm !== "") {
+      rowsToRender = searched; // show matches even if > 100
+    } else {
+      rowsToRender = topWithTies(fullRanking, TOP_N);
+    }
+   
+    renderAuthorsTable(rowsToRender);
+
+
+    // Apply name search — preserve rank
+    let filteredRanking = fullRanking.filter(r =>
+        r.author.toLowerCase().includes(searchTerm)
+    );
+   
+    // LIMIT TO TOP 100 ONLY WHEN NO SEARCH TERM
+    if (searchTerm === "") {
+        filteredRanking = filteredRanking.slice(0, 100);
+    }
+   
+    renderAuthorsTable(filteredRanking);
 }
 
 /* =======================================================
@@ -339,6 +356,14 @@ function assignTieRanks(sortedRows, valueKey, rankKey = "rank") {
   }
 
   return sortedRows;
+}
+
+/* =======================================================
+   Helper Function: Proper return for Top 100 with ties
+======================================================= */
+function topWithTies(fullRanking, N) {
+  // fullRanking must already have tie ranks assigned (r.rank)
+  return fullRanking.filter(r => r.rank <= N);
 }
 
 /* =======================================================
