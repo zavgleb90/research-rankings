@@ -192,7 +192,27 @@ function updateUniversityRankings() {
         selectedGroup
     );
 
-    // Apply name search — preserve rank
+   const TOP_N = 100;
+
+   // Apply search term
+   let searched = fullRanking.filter(r =>
+     r.university.toLowerCase().includes(searchTerm)
+   );
+   
+   let rowsToRender;
+   
+   // If user typed something → show matches (even if rank > 100)
+   if (searchTerm !== "") {
+     rowsToRender = searched;
+   } else {
+     // No search → show Top 100 INCLUDING ties at rank 100
+     rowsToRender = topWithTies(fullRanking, TOP_N);
+   }
+   
+   renderTable(rowsToRender);
+
+
+   // Apply name search — preserve rank
    let filteredRanking = fullRanking.filter(r =>
        r.university.toLowerCase().includes(searchTerm)
    );
@@ -341,9 +361,18 @@ function assignTieRanks(sortedRows, valueKey, rankKey = "rank") {
 }
 
 /* =======================================================
+   Helper Function: Proper return for Top 100 with ties
+======================================================= */
+function topWithTies(fullRanking, N) {
+  // fullRanking must already have tie ranks assigned (r.rank)
+  return fullRanking.filter(r => r.rank <= N);
+}
+
+/* =======================================================
    START
 ======================================================= */
 loadUniversities();
+
 
 
 
