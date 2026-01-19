@@ -161,7 +161,7 @@ function computeFullAuthorRanking(startYear, endYear, selectedJournals, selected
 
     // Sort & assign true rank
     ranking.sort((a, b) => b.articles - a.articles);
-    ranking.forEach((r, i) => r.rank = i + 1);
+    assignTieRanks(ranking, "articles", "rank");
 
     return ranking;
 }
@@ -317,6 +317,28 @@ function resetAllFilters() {
 
     // Refresh table after resetting everything
     updateAuthorsRankings();
+}
+
+/* =======================================================
+   Function: Generic tie-rank function
+======================================================= */
+function assignTieRanks(sortedRows, valueKey, rankKey = "rank") {
+  // sortedRows must already be sorted DESC by valueKey
+  let prevValue = null;
+  let currentRank = 0;
+
+  for (let i = 0; i < sortedRows.length; i++) {
+    const v = sortedRows[i][valueKey];
+
+    if (prevValue === null || v !== prevValue) {
+      // new value group → rank is position (i+1)
+      currentRank = i + 1;
+      prevValue = v;
+    }
+    sortedRows[i][rankKey] = currentRank;
+  }
+
+  return sortedRows;
 }
 
 /* =======================================================
