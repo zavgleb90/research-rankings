@@ -183,7 +183,7 @@ function updateUniversityRankings() {
         document.querySelectorAll("#journalCheckboxes input:checked")
     ).map(cb => cb.value);
 
-    // Compute rankings
+    // Compute rankings (full table, tie ranks already assigned)
     let fullRanking = computeFullUniversityRanking(
         startYear,
         endYear,
@@ -192,39 +192,22 @@ function updateUniversityRankings() {
         selectedGroup
     );
 
-   const TOP_N = 100;
+    const TOP_N = 100;
 
-   // Apply search term
-   let searched = fullRanking.filter(r =>
-     r.university.toLowerCase().includes(searchTerm)
-   );
-   
-   let rowsToRender;
-   
-   // If user typed something → show matches (even if rank > 100)
-   if (searchTerm !== "") {
-     rowsToRender = searched;
-   } else {
-     // No search → show Top 100 INCLUDING ties at rank 100
-     rowsToRender = topWithTies(fullRanking, TOP_N);
-   }
-   
-   renderUniversityTable(rowsToRender);
+    // If user typed something → show matches (even if rank > 100)
+    // If empty search → show Top 100 INCLUDING all ties at rank 100
+    let rowsToRender;
+    if (searchTerm !== "") {
+        rowsToRender = fullRanking.filter(r =>
+            r.university.toLowerCase().includes(searchTerm)
+        );
+    } else {
+        rowsToRender = topWithTies(fullRanking, TOP_N);
+    }
 
-
-   // Apply name search — preserve rank
-   let filteredRanking = fullRanking.filter(r =>
-       r.university.toLowerCase().includes(searchTerm)
-   );
-   
-   // LIMIT TO TOP 100 ONLY WHEN NO SEARCH TERM
-   if (searchTerm === "") {
-       filteredRanking = filteredRanking.slice(0, 100);
-   }
-   
-   renderUniversityTable(filteredRanking);
-
+    renderUniversityTable(rowsToRender);
 }
+
 
 /* =======================================================
    AUTO-SELECT JOURNALS FOR DISCIPLINE
@@ -372,6 +355,7 @@ function topWithTies(fullRanking, N) {
    START
 ======================================================= */
 loadUniversities();
+
 
 
 
